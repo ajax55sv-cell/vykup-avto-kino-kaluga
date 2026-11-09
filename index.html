@@ -251,6 +251,24 @@
   .close__inner .v-lede { max-width: 42ch; }
   .close__cta { display: flex; flex-wrap: wrap; align-items: center; gap: var(--v-4) var(--v-6); margin-top: var(--v-6); }
   .close__tel { font-family: var(--v-font-display); font-weight: 600; font-size: var(--v-t-xl); text-decoration: none; display: inline-flex; align-items: center; min-height: 44px; color: var(--v-ink); letter-spacing: -.01em; }
+  .rate { display: grid; gap: var(--v-5); margin-top: var(--v-6); max-width: 38rem; }
+  .rate__f { display: grid; gap: var(--v-2); margin: 0; padding: 0; border: 0; min-width: 0; }
+  .rate__cap { font-size: var(--v-t-xs); letter-spacing: var(--v-track-wide); text-transform: uppercase; color: var(--v-ink-soft); font-weight: 500; padding: 0; }
+  .rate__in { width: 100%; min-height: 48px; padding: 0 var(--v-4); border-radius: var(--v-radius); border: 1px solid var(--v-hair-strong); background: var(--v-surface); color: var(--v-ink);
+    font: 400 1rem/1.3 var(--v-font-text); transition: border-color .15s var(--v-ease-out), box-shadow .15s var(--v-ease-out); }
+  .rate__in::placeholder { color: var(--v-ink-soft); opacity: .8; }
+  .rate__in:focus { outline: none; border-color: var(--v-accent); box-shadow: 0 0 0 3px var(--v-accent-25); }
+  .rate__chips { display: flex; flex-wrap: wrap; gap: var(--v-2); }
+  .chip { position: relative; display: inline-flex; }
+  .chip input { position: absolute; inset: 0; opacity: 0; margin: 0; cursor: pointer; }
+  .chip span { display: inline-flex; align-items: center; min-height: 44px; padding: 0 var(--v-4); border-radius: var(--v-radius); border: 1px solid var(--v-hair-strong); background: var(--v-surface);
+    font-size: var(--v-t-sm); transition: background-color .15s var(--v-ease-out), border-color .15s var(--v-ease-out), color .15s var(--v-ease-out); }
+  .chip input:checked + span { background: var(--v-accent); border-color: var(--v-accent); color: var(--v-accent-ink); font-weight: 600; }
+  .chip input:focus-visible + span { outline: 2px solid var(--v-accent); outline-offset: 2px; }
+  @media (hover: hover) and (pointer: fine) { .chip:hover input:not(:checked) + span { border-color: var(--v-accent); } }
+  .rate__say { padding: var(--v-4) var(--v-5); border-radius: var(--v-radius); background: var(--v-surface); box-shadow: var(--v-e1), var(--v-edge); display: grid; gap: var(--v-2); }
+  .rate__say .v-label { color: var(--v-accent); }
+  .rate__say p { font-size: var(--v-t-base); line-height: 1.45; text-wrap: pretty; }
   .toast { position: fixed; left: 50%; bottom: calc(var(--v-6) + env(safe-area-inset-bottom)); z-index: 60; max-width: min(34rem, calc(100vw - 2 * var(--v-gutter)));
     padding: var(--v-3) var(--v-5); border-radius: var(--v-radius); background: var(--v-surface); color: var(--v-ink); font-size: var(--v-t-sm); text-align: center;
     box-shadow: var(--v-e2), var(--v-edge), inset 0 0 0 1px var(--v-accent-25);
@@ -483,12 +501,35 @@
         <div class="close__inner">
           <div data-v-in data-v-stagger="80">
             <h2 class="v-display v-display--lg">Позвоните и договоритесь об осмотре</h2>
-            <p class="v-lede">Назовите марку, год, пробег и состояние. Цену назовут после осмотра, не по телефону.</p>
+            <p class="v-lede">Опишите машину – соберём текст, который останется прочитать по телефону. Цену назовут после осмотра.</p>
+            <div class="rate">
+              <label class="rate__f" for="rCar"><span class="rate__cap">Марка и год</span>
+                <input id="rCar" class="rate__in" type="text" autocomplete="off" maxlength="60" placeholder="Например, Lada Granta 2018">
+              </label>
+              <fieldset class="rate__f"><legend class="rate__cap">Состояние</legend>
+                <div class="rate__chips">
+                  <label class="chip"><input type="radio" name="rState" value="на ходу, без повреждений"><span>На ходу, без повреждений</span></label>
+                  <label class="chip"><input type="radio" name="rState" value="на ходу, есть повреждения"><span>На ходу, есть повреждения</span></label>
+                  <label class="chip"><input type="radio" name="rState" value="не на ходу"><span>Не на ходу</span></label>
+                </div>
+              </fieldset>
+              <fieldset class="rate__f"><legend class="rate__cap">Когда удобно показать</legend>
+                <div class="rate__chips">
+                  <label class="chip"><input type="radio" name="rWhen" value="сегодня"><span>Сегодня</span></label>
+                  <label class="chip"><input type="radio" name="rWhen" value="завтра"><span>Завтра</span></label>
+                  <label class="chip"><input type="radio" name="rWhen" value="в выходные"><span>В выходные</span></label>
+                </div>
+              </fieldset>
+              <div class="rate__say" aria-live="polite">
+                <span class="v-label">Что сказать по телефону</span>
+                <p id="rSay"></p>
+              </div>
+            </div>
             <div class="close__cta">
-              <a class="v-btn" href="tel:+79533220182" rel="noopener" data-v-magnet="0.22">Оценить мою машину</a>
+              <a class="v-btn" id="rBtn" href="tel:+79533220182" rel="noopener" data-v-magnet="0.22">Оценить мою машину</a>
               <a class="close__tel" href="tel:+79533220182"><span class="nw">+7 (953) 322-01-82</span></a>
             </div>
-            <p class="close__hint">На телефоне кнопка набирает номер, на компьютере копирует его. Об условиях выкупа – документы, расчёт, состояние машины – спросите при звонке.</p>
+            <p class="close__hint">Кнопка копирует текст выше, на телефоне после этого набирает номер. Об условиях выкупа – документы, расчёт, состояние машины – спросите при звонке.</p>
           </div>
           <div class="close__meta" data-v-in data-v-stagger="60">
             <span><b>Часы работы</b>Ежедневно 9:00–20:00, по выкупу уточните по телефону</span>
@@ -525,29 +566,55 @@
     window.addEventListener('scroll', tick, { passive: true }); tick();
   })();
 
-  // Звонок: на телефоне ссылка tel: набирает номер; на компьютере её открывать нечем,
-  // поэтому кнопка ведёт к блоку с номером, копирует номер и говорит об этом.
+  // Звонок и текст для разговора. Нет мессенджера – форма собирает фразу, которую читают по телефону.
   (function () {
-    if (window.matchMedia('(hover: none) and (pointer: coarse)').matches) return;
-    var NUM = '+7 (953) 322-01-82', toast = document.createElement('div'), timer = 0;
+    var NUM = '+7 (953) 322-01-82', touch = window.matchMedia('(hover: none) and (pointer: coarse)').matches;
+    var car = document.getElementById('rCar'), say = document.getElementById('rSay'), btn = document.getElementById('rBtn');
+    var toast = document.createElement('div'), timer = 0;
     toast.className = 'toast'; toast.setAttribute('role', 'status'); toast.setAttribute('aria-live', 'polite');
-    document.body.appendChild(toast);
-    function say(t) { toast.textContent = t; toast.classList.add('is-on'); clearTimeout(timer); timer = setTimeout(function () { toast.classList.remove('is-on'); }, 4500); }
-    function copy(done) {
+    document.querySelector('.v-page').appendChild(toast);
+    function note(t) { toast.textContent = t; toast.classList.add('is-on'); clearTimeout(timer); timer = setTimeout(function () { toast.classList.remove('is-on'); }, 5000); }
+    function val(n) { var r = document.querySelector('input[name="' + n + '"]:checked'); return r ? r.value : ''; }
+    function compose() {
+      var c = car.value.replace(/\s+/g, ' ').trim(), st = val('rState'), wh = val('rWhen'), parts = [];
+      if (c) parts.push(c);
+      if (st) parts.push(st);
+      var t = 'Здравствуйте! Хочу продать машину' + (parts.length ? ': ' + parts.join(', ') : '') + '.';
+      if (wh) t += ' Удобно показать ' + wh + '.';
+      return t + ' Хочу договориться об осмотре.';
+    }
+    function refresh() { say.textContent = compose(); }
+    function copy(text, done) {
       function fallback() {
-        var a = document.createElement('textarea'); a.value = NUM; a.setAttribute('readonly', ''); a.style.cssText = 'position:fixed;opacity:0;top:0;left:0';
+        var a = document.createElement('textarea'); a.value = text; a.setAttribute('readonly', ''); a.style.cssText = 'position:fixed;opacity:0;top:0;left:0';
         document.body.appendChild(a); a.select(); var ok = false; try { ok = document.execCommand('copy'); } catch (e) {} a.remove(); done(ok);
       }
-      if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(NUM).then(function () { done(true); }, fallback); else fallback();
+      if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(function () { done(true); }, fallback); else fallback();
     }
-    Array.prototype.forEach.call(document.querySelectorAll('a[href^="tel:"]'), function (a) {
+    car.addEventListener('input', refresh);
+    Array.prototype.forEach.call(document.querySelectorAll('.rate input[type="radio"]'), function (r) { r.addEventListener('change', refresh); });
+    refresh();
+
+    // нижняя кнопка: копирует текст; на компьютере больше ничего, на телефоне после этого набирает номер
+    btn.addEventListener('click', function (e) {
+      var t = compose();
+      if (!touch) e.preventDefault();
+      copy(t, function (ok) { if (!touch) note(ok ? 'Текст скопирован – позвоните ' + NUM + ' и прочитайте его' : 'Позвоните ' + NUM + ' и прочитайте текст выше'); });
+    });
+
+    // остальные звонки: на телефоне набирают номер; на компьютере ведут к блоку и копируют номер
+    if (touch) return;
+    Array.prototype.forEach.call(document.querySelectorAll('a[href^="tel:"]:not(#rBtn)'), function (a) {
       a.addEventListener('click', function (e) {
         e.preventDefault();
-        if (a.classList.contains('v-btn')) {
-          var z = document.getElementById('zapis'), r = z.getBoundingClientRect();
+        var inFinal = !!a.closest('#zapis');
+        if (a.classList.contains('v-btn') && !inFinal) {
+          var r = document.getElementById('zapis').getBoundingClientRect();
           if (r.top > 120 || r.bottom < 0) window.scrollTo({ top: r.top + window.scrollY, behavior: 'smooth' });
+          note('Опишите машину ниже – соберём текст для разговора. Номер: ' + NUM);
+          return;
         }
-        copy(function (ok) { say(ok ? 'Номер ' + NUM + ' скопирован – наберите его с телефона' : 'Позвоните по номеру ' + NUM); });
+        copy(NUM, function (ok) { note(ok ? 'Номер ' + NUM + ' скопирован – наберите его с телефона' : 'Позвоните по номеру ' + NUM); });
       });
     });
   })();
