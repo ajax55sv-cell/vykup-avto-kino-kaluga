@@ -251,6 +251,11 @@
   .close__inner .v-lede { max-width: 42ch; }
   .close__cta { display: flex; flex-wrap: wrap; align-items: center; gap: var(--v-4) var(--v-6); margin-top: var(--v-6); }
   .close__tel { font-family: var(--v-font-display); font-weight: 600; font-size: var(--v-t-xl); text-decoration: none; display: inline-flex; align-items: center; min-height: 44px; color: var(--v-ink); letter-spacing: -.01em; }
+  .toast { position: fixed; left: 50%; bottom: calc(var(--v-6) + env(safe-area-inset-bottom)); z-index: 60; max-width: min(34rem, calc(100vw - 2 * var(--v-gutter)));
+    padding: var(--v-3) var(--v-5); border-radius: var(--v-radius); background: var(--v-surface); color: var(--v-ink); font-size: var(--v-t-sm); text-align: center;
+    box-shadow: var(--v-e2), var(--v-edge), inset 0 0 0 1px var(--v-accent-25);
+    opacity: 0; transform: translate(-50%, 8px); pointer-events: none; transition: opacity .25s var(--v-ease-out), transform .25s var(--v-ease-out); }
+  .toast.is-on { opacity: 1; transform: translate(-50%, 0); }
   .close__hint { margin-top: var(--v-4); font-size: var(--v-t-sm); color: var(--v-ink-soft); max-width: 46ch; }
   .close__meta { display: grid; gap: var(--v-3); color: var(--v-ink-soft); padding-top: var(--v-2); }
   .close__meta b { color: var(--v-ink); font-weight: 600; display: block; font-size: var(--v-t-xs); letter-spacing: var(--v-track-wide); text-transform: uppercase; margin-bottom: .2em; }
@@ -483,7 +488,7 @@
               <a class="v-btn" href="tel:+79533220182" rel="noopener" data-v-magnet="0.22">Оценить мою машину</a>
               <a class="close__tel" href="tel:+79533220182"><span class="nw">+7 (953) 322-01-82</span></a>
             </div>
-            <p class="close__hint">Кнопка набирает номер. Об условиях выкупа – документы, расчёт, состояние машины – спросите при звонке.</p>
+            <p class="close__hint">На телефоне кнопка набирает номер, на компьютере копирует его. Об условиях выкупа – документы, расчёт, состояние машины – спросите при звонке.</p>
           </div>
           <div class="close__meta" data-v-in data-v-stagger="60">
             <span><b>Часы работы</b>Ежедневно 9:00–20:00, по выкупу уточните по телефону</span>
@@ -518,6 +523,33 @@
     var bar = document.querySelector('.bar'), on = null;
     function tick() { var s = window.scrollY > 40; if (s !== on) { on = s; bar.classList.toggle('is-scrolled', s); } }
     window.addEventListener('scroll', tick, { passive: true }); tick();
+  })();
+
+  // Звонок: на телефоне ссылка tel: набирает номер; на компьютере её открывать нечем,
+  // поэтому кнопка ведёт к блоку с номером, копирует номер и говорит об этом.
+  (function () {
+    if (window.matchMedia('(hover: none) and (pointer: coarse)').matches) return;
+    var NUM = '+7 (953) 322-01-82', toast = document.createElement('div'), timer = 0;
+    toast.className = 'toast'; toast.setAttribute('role', 'status'); toast.setAttribute('aria-live', 'polite');
+    document.body.appendChild(toast);
+    function say(t) { toast.textContent = t; toast.classList.add('is-on'); clearTimeout(timer); timer = setTimeout(function () { toast.classList.remove('is-on'); }, 4500); }
+    function copy(done) {
+      function fallback() {
+        var a = document.createElement('textarea'); a.value = NUM; a.setAttribute('readonly', ''); a.style.cssText = 'position:fixed;opacity:0;top:0;left:0';
+        document.body.appendChild(a); a.select(); var ok = false; try { ok = document.execCommand('copy'); } catch (e) {} a.remove(); done(ok);
+      }
+      if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(NUM).then(function () { done(true); }, fallback); else fallback();
+    }
+    Array.prototype.forEach.call(document.querySelectorAll('a[href^="tel:"]'), function (a) {
+      a.addEventListener('click', function (e) {
+        e.preventDefault();
+        if (a.classList.contains('v-btn')) {
+          var z = document.getElementById('zapis'), r = z.getBoundingClientRect();
+          if (r.top > 120 || r.bottom < 0) window.scrollTo({ top: r.top + window.scrollY, behavior: 'smooth' });
+        }
+        copy(function (ok) { say(ok ? 'Номер ' + NUM + ' скопирован – наберите его с телефона' : 'Позвоните по номеру ' + NUM); });
+      });
+    });
   })();
 
   // Фирменный ход «осмотр»: развёртка и места осмотра живут в CSS от --v-p; скрипту остаётся счётчик «осмотрено».
